@@ -307,7 +307,9 @@ protected:
 	
 protected:
 	S8 mCodec;
+public:
 	S8 mDecoding;
+protected:
 	S8 mDecoded;  // unused, but changing LLImage layout requires recompiling static Mac/Linux libs. 2009-01-30 JC
 	S8 mDiscardLevel;
 	
