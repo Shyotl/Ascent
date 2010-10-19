@@ -24,7 +24,6 @@ public:
 	//Virtual destructors in abstract classes are a good thing.
 	virtual ~SHCommandHandler() {}	
 
-
 	//Must override in derived classes.
 	virtual const std::string &getName() const = 0; 
 
@@ -52,20 +51,17 @@ public:
 
 	//ctor/dtors
 	SHDynamicCommand(bool from_chat, const std::string &str, command_fn_t callback, LLControlGroup *pGroup)
-		: SHCommandHandler(from_chat,callback)/*, mIsCOA(false)*/, pControl(new LLCachedControl<std::string>(str,""))
-		{/*Init(str,pGroup,false);*/}
+		: SHCommandHandler(from_chat,callback), pControl(new LLCachedControl<std::string>(str,""))
+		{}
 	SHDynamicCommand(bool from_chat, const std::string &str, command_fn_t callback, LLControlGroup &pGroup = gSavedSettings)
-		: SHCommandHandler(from_chat,callback)/*, mIsCOA(false)*/, pControl(new LLCachedControl<std::string>(str,""))
-		{/*Init(str,&pGroup,false);*/}
-	//SHDynamicCommand(bool from_chat, const std::string &str, command_fn_t callback, LLIConditionalControlGroup &pGroup)
-	//	: SHCommandHandler(from_chat,callback)/*, mIsCOA(true)*/, pControl(new LLCachedCOAControl<std::string>(str,""))
-	//	{/*Init(str,pGroup.get(),true);*/}
+		: SHCommandHandler(from_chat,callback), pControl(new LLCachedControl<std::string>(str,""))
+		{}
 
 //Virtuals:
 	virtual ~SHDynamicCommand()
 	{
 		if(pControl)
-			delete pControl; //LLCachedControl now has a virtual destructor. This is safe.
+			delete pControl;
 	}
 	virtual const std::string &getName() const
 	{
@@ -101,10 +97,6 @@ public:
 //Specify control group
 #define CMD_SCRIPT_SETTING(varname,group)	SETUP_SETTING_CMD(script,varname,group,false)
 #define CMD_CHAT_SETTING(varname,group)		SETUP_SETTING_CMD(chat,varname,group,true)
-
-//Command name defined by setting in gCOASavedSettings
-#define CMD_SCRIPT_COA(varname)				CMD_SCRIPT_SETTING(varname,gCOASavedSettings)
-#define CMD_CHAT_COA(varname)				CMD_CHAT_SETTING(varname,gCOASavedSettings)
 
 //command name is static
 #define CMD_SCRIPT(varname)					SETUP_STATIC_CMD(script,varname,false)
