@@ -54,8 +54,7 @@ extern std::map<std::string, LLControlGroup*> gSettings;
 void create_graphics_group(LLControlGroup& group);
 
 // saved at end of session
-// gSavedSettings and gCOASavedSettings moved to llcontrol.h
-extern LLControlGroup gSavedPerAccountSettings;
+// gSavedSettings, gSavedPerAccountSettings and gCOASavedSettings moved to llcontrol.h
 
 // Read-only
 extern LLControlGroup gColors;
