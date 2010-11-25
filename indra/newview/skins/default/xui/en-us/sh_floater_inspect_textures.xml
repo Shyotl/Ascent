@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<floater can_close="true" can_drag_on_left="false" can_minimize="true" can_resize="true" height="300" width = "360" bottom="40" left="40" 
+     min_height="300" min_width="360" name="inspect_textures" title="Inspect Textures">
+	<scroll_container enabled="true" left="3" bottom="75" height="200" width="353" follows="left|top|right|bottom" mouse_opaque="false" name="texture_scroll" opaque="false"/>
+	<view_border bevel_style="none" border="true" border_thickness="2" left="3" bottom="3" width="336" height="73" follows="left|bottom|right" mouse_opaque="false" />
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom="47" drop_shadow_visible="true" enabled="true" follows="left|bottom"
+	     font="SansSerif" h_pad="0" halign="left" height="20" left="7"
+	     mouse_opaque="false" name="uploader_lbl" v_pad="0" width="100">
+		Uploader ID:
+	</text>
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="-22" drop_shadow_visible="true" enabled="true" follows="left|bottom"
+	     font="SansSerif" h_pad="0" halign="left" height="20" left="7"
+	     mouse_opaque="false" name="uploader_name_lbl" v_pad="0" width="100">
+		Uploader Name:
+	</text>
+	<text type="string" length="1" bg_visible="false" border_drop_shadow_visible="false" border_visible="false"
+	     bottom_delta="-22" drop_shadow_visible="true" enabled="true" follows="left|bottom"
+	     font="SansSerif" h_pad="0" halign="left" height="20" left="7"
+	     mouse_opaque="false" name="upload_date_lbl" v_pad="0" width="100">
+		Upload Date:
+	</text>
+	<button name="showprofile" bottom="52" left_delta="68" follows="bottom|left" font="SansSerif" halign="center" height="20" label="" width="23" scale_image="true" mouse_opaque="true"
+			 image_selected="tool_zoom.tga" image_unselected="tool_zoom.tga" image_hover_selected="tool_zoom_active.tga" image_hover_unselected="tool_zoom_active.tga" tool_tip="Show profile"/>
+	<line_editor name="uploader" label="UUID of texture uploader." enabled="false" follows="bottom|left|right"					bottom_delta="0"	left_delta="22" width="238" height="20" select_all_on_focus_received="false" select_on_focus="false" handle_edit_keys_directly="false"/>
+	<line_editor name="uploader_name" label="Name of texture uploader." enabled="false" follows="bottom|left|right"				bottom_delta="-22"	left_delta="0"  width="238" height="20" select_all_on_focus_received="false" select_on_focus="false" handle_edit_keys_directly="false"/>
+	<line_editor name="upload_date" label="Date upon which texture was uploaded." enabled="false" follows="bottom|left|right"	bottom_delta="-22"	left_delta="0"  width="238" height="20" select_all_on_focus_received="false" select_on_focus="false" handle_edit_keys_directly="false"/>
+</floater>

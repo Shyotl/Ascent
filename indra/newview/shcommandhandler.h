@@ -1,3 +1,18 @@
+/** 
+ * @file shcommandhandler.h
+ * @brief Chat/script command handler
+ * @Author Shyotl Kuhr
+ *
+ * $LicenseInfo:firstyear=2010&license=viewergpl$
+ * 
+ * Copyright (c) 2010, Shyotl Kuhr.
+ *  Custom implementation, mimics some commands present in Emerald
+ *
+ * ALL SOURCE CODE IS PROVIDED "AS IS." THE CREATOR MAKES NO
+ * WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING ITS ACCURACY,
+ * COMPLETENESS OR PERFORMANCE.
+ */
+
 #if SHY_MOD //Command handler
 #include "llviewerobject.h"
 #include "llagentdata.h"

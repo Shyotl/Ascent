@@ -88,15 +88,14 @@ std::vector<U8> LLJ2cParser::GetNextComment()
 */
 
 //static
-unsigned int LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size, std::string& output)
+bool LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size, std::map<std::string,std::pair<std::string,unsigned int> >& output)
 {
 	LLJ2cParser parser = LLJ2cParser(data,data_size);
 
-	std::string decodedComment;
-
 	//not supported yet, but why the hell not?
-	unsigned int result = ENC_NONE;
+	//unsigned int result = ENC_NONE;
 
+	bool found = false;
 	while(1)
 	{
 	    std::vector<U8> comment = parser.GetNextComment();
@@ -105,6 +104,8 @@ unsigned int LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size
 	    if (comment[1] == 0x00 && comment.size() == 130)
 	    {
 			bool xorComment = true;
+			unsigned int format = ENC_NONE;
+
 			//llinfos << "FOUND PAYLOAD" << llendl;
 			std::vector<U8> payload(128);
 			S32 i;
@@ -121,7 +122,7 @@ unsigned int LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size
 					payload[i + 2] ^= payload[0];
 					payload[i + 3] ^= payload[2];
 				}
-				result = ENC_EMKDU_V1;
+				format = ENC_EMKDU_V1;
 			}
 			else if (payload[3] == payload[127])
 			{
@@ -133,7 +134,7 @@ unsigned int LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size
 					payload[i + 2] ^= payload[1];
 					payload[i + 3] ^= payload[3];
 				}
-				result = ENC_ONYXKDU;
+				format = ENC_ONYXKDU;
 			}
 			else
 			{
@@ -183,13 +184,16 @@ unsigned int LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size
 					if (decrypted[i] == 0) break;
 				}
 				if(i == 0) continue;
-				if(decodedComment.length() > 0)
-					decodedComment.append(", ");
-
-				//the way it's being done now, you can only specify the encryption type for the last comment.
-				//need to switch to a map<std::string, unsigned int> or a vector for output.
-				result = ENC_EMKDU_V2;
-				decodedComment.append(decrypted.begin(),decrypted.begin()+i);
+				
+				std::map<std::string,std::pair<std::string,unsigned int> >::iterator it = output.find("client");
+				if(it!=output.end())
+				{
+					it->second.first.append(", ");
+					it->second.first.append(decrypted.begin(),decrypted.begin()+i);
+				}
+				else
+					output["client"]=std::pair<std::string,unsigned int>(std::string(decrypted.begin(),decrypted.begin()+i),format);
+				found=true;
 			}
 			else
 			{
@@ -198,16 +202,50 @@ unsigned int LLImageMetaDataReader::ExtractEncodedComment(U8* data,int data_size
 					if (payload[i] == 0) break;
 				}
 				if(i < 4) continue;
-				if(decodedComment.length() > 0)
-					decodedComment.append(", ");
-
-				decodedComment.append(payload.begin()+4,payload.begin()+i);
+				std::map<std::string,std::pair<std::string,unsigned int> >::iterator it = output.find("client");
+				if(it!=output.end())
+				{
+					it->second.first.append(", ");
+					it->second.first.append(payload.begin(),payload.begin()+i);
+				}
+				else
+					output["client"]=std::pair<std::string,unsigned int>(std::string(payload.begin(),payload.begin()+i),format);
+				found=true;
 			}
 			//llinfos << "FOUND COMMENT: " << result << llendl;
 	    }
+		else if(comment[0]==0 && comment[1]==1 && comment[3]=='=')
+		{
+			//[a]=uploader id
+			//[z]=upload time
+			//[c]=color
+			//Tokenizing.. starts at index 2
+			std::string tok;
+			std::map<std::string,std::pair<std::string,unsigned int> >::iterator it=output.end();
+			for(unsigned int i=2;i<comment.size();++i)
+			{
+				if(comment[i]=='=')
+					//Oh gawd.
+					it = output.insert(std::pair<std::string,std::pair<std::string,unsigned int> >(tok,std::pair<std::string,unsigned int>("",ENC_NONE))).first;
+				else if(comment[i]=='&')
+				{
+					if(it != output.end())
+						it->second.first = tok;
+					it = output.end();
+				}
+				else
+				{
+					tok.push_back(comment[i]);
+					continue;
+				}
+				tok.clear();
+			}
+			if(it!=output.end())
+				it->second.first = tok;
+			found=true;
+		}
 	}
 	//end of loop
-	output = decodedComment;
-	return result;
+	return found;
 }
 // </edit>

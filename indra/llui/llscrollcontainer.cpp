@@ -746,5 +746,7 @@ LLView* LLScrollableContainerView::fromXML(LLXMLNodePtr node, LLView *parent, LL
 
 	ret->mScrolledView = panelp;
 
+	ret->initFromXML(node, parent);
+
 	return ret;
 }

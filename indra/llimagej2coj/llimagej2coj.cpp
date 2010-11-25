@@ -314,9 +314,18 @@ BOOL LLImageJ2COJ::encodeImpl(LLImageJ2C &base, const LLImageRaw &raw_image, con
 		}
 	}
 
+	std::string comment_metadata;
 	if (!comment_text)
 	{
-		parameters.cp_comment = (char *) "";
+		//Inserting owner id, upload time, and dimensions 
+		//See http://wiki.secondlife.com/wiki/Texture_meta-data for details.
+		extern LLUUID gAgentID;
+		time_t now = time(NULL);
+		tm * ptime = gmtime(&now);
+		//std::string color_avg(llformat("c=%02x%02x%02x%02x")); //Perhaps do this some day...
+		std::string timestr(llformat("z=%04i%02i%02i%02i%02i%02i",ptime->tm_year+1900,ptime->tm_mon+1,ptime->tm_mday,ptime->tm_hour,ptime->tm_min,ptime->tm_sec));
+		comment_metadata=llformat("a=%s&%s&h=%u&w=%u",gAgentID.asString().c_str(),timestr.c_str(),(U32)raw_image.getHeight(),(U32)raw_image.getWidth());
+		parameters.cp_comment = (char *) comment_metadata.c_str();
 	}
 	else
 	{

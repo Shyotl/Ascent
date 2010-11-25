@@ -112,6 +112,7 @@ CommentCacheReadResponder(LLPointer<LLViewerImage> image)
 	mFormattedImage = new LLImageJ2C;
 	setImage(mFormattedImage);
 }
+
 void setData(U8* data, S32 datasize, S32 imagesize, S32 imageformat, BOOL imagelocal)
 {
 	if(imageformat==IMG_CODEC_TGA && mFormattedImage->getCodec()==IMG_CODEC_J2C)
@@ -142,7 +143,7 @@ virtual void completed(bool success)
 	{
 
 		//llinfos << "SUCCESS getting texture "<<mID<< llendl;
-		mViewerImage->commentEncryptionType = LLImageMetaDataReader::ExtractEncodedComment(
+		LLImageMetaDataReader::ExtractEncodedComment(
 				mFormattedImage->getData(),
 				mFormattedImage->getDataSize(),
 				mViewerImage->decodedComment

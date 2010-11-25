@@ -555,7 +555,7 @@ void secondsToTimecodeString(F32 current_time, std::string& tcstring)
 }
 
 
-void timeToFormattedString(time_t time, std::string format, std::string &timestr)
+void timeToFormattedString(time_t time, std::string &format, std::string &timestr)
 {
 	char buffer[256];
 	struct tm *t;
@@ -565,13 +565,38 @@ void timeToFormattedString(time_t time, std::string format, std::string &timestr
 }
 
 
-void timeStructToFormattedString(struct tm * time, std::string format, std::string &timestr)
+void timeStructToFormattedString(struct tm * time, std::string &format, std::string &timestr)
 {
 	char buffer[256];
 	strftime(buffer, 255, format.c_str(), time);
 	timestr = (const char*)buffer;
 }
-
+bool timeStringToFormattedString(std::string &input, std::string &format, std::string &timestr)
+{
+	if(input.length() == 14)
+	{
+		tm local_time;
+		std::string substr;
+		int value;
+		local_time.tm_year=	(value=atoi((substr=input.substr(0 ,4)).c_str())) - 1900;
+		if(!value && substr != "0000")return false;
+		local_time.tm_mon =	(value=atoi((substr=input.substr(4 ,2)).c_str())) - 1;
+		if(!value && substr != "00")return false;
+		local_time.tm_mday=	(value=atoi((substr=input.substr(6 ,2)).c_str()));
+		if(!value && substr != "00")return false;
+		local_time.tm_hour=	(value=atoi((substr=input.substr(8 ,2)).c_str()));
+		if(!value && substr != "00")return false;
+		local_time.tm_min =	(value=atoi((substr=input.substr(10,2)).c_str()));
+		if(!value && substr != "00")return false;
+		local_time.tm_sec =	(value=atoi((substr=input.substr(12,2)).c_str()));
+		if(!value && substr != "00")return false;
+		mktime(&local_time);
+		timeStructToFormattedString(&local_time,format,timestr);
+		return true;
+	}
+	else
+		return false;
+}
 
 //////////////////////////////////////////////////////////////////////////////
 //

@@ -82,6 +82,10 @@ public:
 	static LLPreviewTexture* getInstance(){ return sInstance; }
 	LLUUID mCreatorKey;
 
+	LLUUID mUploaderKey;
+	std::string mColor;
+	std::string mTime;
+
 protected:
 	void				init();
 	bool				setAspectRatio(const F32 width, const F32 height);

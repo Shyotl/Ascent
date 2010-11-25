@@ -169,7 +169,9 @@ private:
 	drag_n_drop_callback	 mDropCallback;
 	LLUICtrlCallback		 mOnCancelCallback;
 	LLUICtrlCallback		 mOnSelectCallback;
+public:
 	LLPointer<LLViewerImage> mTexturep;
+private:
 	LLColor4				 mBorderColor;
 	LLUUID					 mImageItemID;
 	LLUUID					 mImageAssetID;

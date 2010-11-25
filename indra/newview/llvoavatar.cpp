@@ -3572,30 +3572,31 @@ void LLVOAvatar::getClientInfo(std::string& client, LLColor4& color, BOOL useCom
 	{
 		LLUUID baked_head_id = getTE(9)->getID();
 		LLPointer<LLViewerImage> baked_head_image = gImageList.getImage(baked_head_id);
-		if(baked_head_image && baked_head_image->decodedComment.length())
+		std::map<std::string,std::pair<std::string,unsigned int> >::iterator it;
+		if(baked_head_image && (it = baked_head_image->decodedComment.find("client"))!=baked_head_image->decodedComment.end())
 		{
 			if(client.length())
 				client += ", ";
 
-			if(baked_head_image->commentEncryptionType == ENC_EMKDU_V1 || baked_head_image->commentEncryptionType == ENC_ONYXKDU)
+			if(it->second.second == ENC_EMKDU_V1 || it->second.second == ENC_ONYXKDU)
 				client += "(XOR) ";
-			else if(baked_head_image->commentEncryptionType == ENC_EMKDU_V2)
+			else if(it->second.second == ENC_EMKDU_V2)
 				client += "(AES) ";
 
-			client += baked_head_image->decodedComment;
+			client += it->second.first;
 		}
-
 		LLPointer<LLViewerImage> baked_eye_image = gImageList.getImage(getTE(11)->getID());
 
-		if(baked_eye_image && !baked_eye_image->decodedComment.empty()
-			&& baked_eye_image->decodedComment != baked_head_image->decodedComment)
+		std::map<std::string,std::pair<std::string,unsigned int> >::iterator it2;
+		if(baked_eye_image && (it2 = baked_eye_image->decodedComment.find("client"))!=baked_eye_image->decodedComment.end()
+			&& it->second.first != it2->second.first)
 		{
-			if(baked_eye_image->commentEncryptionType == ENC_EMKDU_V1 || baked_eye_image->commentEncryptionType == ENC_ONYXKDU)
-				extraMetadata = "(XOR) ";
-			else if(baked_eye_image->commentEncryptionType == ENC_EMKDU_V2)
-				extraMetadata = "(AES) ";
+			if(it->second.second == ENC_EMKDU_V1 || it->second.second == ENC_ONYXKDU)
+				extraMetadata += "(XOR) ";
+			else if(it->second.second == ENC_EMKDU_V2)
+				extraMetadata += "(AES) ";
 
-			extraMetadata += baked_eye_image->decodedComment;
+			extraMetadata += it2->second.first;
 		}
 	}
 }

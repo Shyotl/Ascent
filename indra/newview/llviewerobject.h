@@ -116,6 +116,38 @@ public:
 
 //============================================================================
 
+struct LLViewerObjectListener
+{
+	enum EChangeType
+	{
+		REM		= (1<<0), //Done
+		TEX		= (1<<1), //Done
+		BUMP	= (1<<2), //Done
+		SHINE	= (1<<3), //Done
+		GLOW	= (1<<4), //Done
+		SHAPE	= (1<<5),
+		POS		= (1<<6),
+		ROT		= (1<<7)
+	};
+	virtual ~LLViewerObjectListener(){}
+	virtual void onObjectChanged(LLViewerObject *pObject, unsigned int changed);
+};
+struct LLViewerObjectListenerScoped : public LLViewerObjectListener
+{
+	LLViewerObject *mObject;
+	LLViewerObjectListener *mListener;
+	LLViewerObjectListenerScoped( const LLViewerObjectListenerScoped &copy);
+	LLViewerObjectListenerScoped(LLViewerObjectListener *pListener, LLViewerObject *pObject);
+	~LLViewerObjectListenerScoped();
+	void onObjectChanged(LLViewerObject *pObject, unsigned int changed)
+	{
+		if(mObject != pObject)return;//WUT?
+		LLViewerObjectListener::onObjectChanged(pObject,changed);
+		mListener->onObjectChanged(pObject,changed); //Will call pObject->removeObject(mListener) too... but no biggie
+		if(changed & LLViewerObjectListener::REM)mObject = NULL;
+	}
+};
+
 class LLViewerObject : public LLPrimitive, public LLRefCount
 {
 protected:
@@ -128,6 +160,7 @@ protected:
 		LLNetworkData *data;
 	};
 	std::map<U16, ExtraParameter*> mExtraParameterList;
+	std::set<LLViewerObjectListener *> mListeners;
 
 public:
 	typedef std::list<LLPointer<LLViewerObject> > child_list_t;
@@ -137,6 +170,15 @@ public:
 
 	LLViewerObject(const LLUUID &id, const LLPCode type, LLViewerRegion *regionp, BOOL is_global = FALSE);
 	MEM_TYPE_NEW(LLMemType::MTYPE_OBJECT);
+
+	void addListen( LLViewerObjectListener *pListen ) {mListeners.insert(pListen);}
+	void removeListen( LLViewerObjectListener *pListen ) {mListeners.erase(pListen);}
+	void callListeners( LLViewerObjectListener::EChangeType changed ) 
+	{
+		std::set<LLViewerObjectListener *> listeners = mListeners;
+		for(std::set<LLViewerObjectListener *>::iterator it=listeners.begin();it!=listeners.end();++it)
+			(*it)->onObjectChanged(this,changed);
+	}
 
 	virtual void markDead();				// Mark this object as dead, and clean up its references
 	BOOL isDead() const									{return mDead;}
@@ -733,6 +775,23 @@ public:
 
 	virtual void updateDrawable(BOOL force_damped);
 };
+
+inline void LLViewerObjectListener::onObjectChanged(LLViewerObject *pObject, unsigned int changed)
+{
+	if(changed & REM)pObject->removeListen(this);
+}
+inline LLViewerObjectListenerScoped::LLViewerObjectListenerScoped( const LLViewerObjectListenerScoped &copy) : mObject(copy.mObject), mListener(copy.mListener)
+{
+	if(mObject)mObject->addListen(this);
+}
+inline LLViewerObjectListenerScoped::LLViewerObjectListenerScoped(LLViewerObjectListener *pListener, LLViewerObject *pObject) : mObject(pObject), mListener(pListener)
+{
+	if(mObject)mObject->addListen(this);
+}
+inline LLViewerObjectListenerScoped::~LLViewerObjectListenerScoped()
+{
+	if(mObject)mObject->removeListen(this);
+}
 
 extern BOOL gVelocityInterpolate;
 extern BOOL gPingInterpolate;

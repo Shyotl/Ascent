@@ -376,6 +376,7 @@ void LLViewerObject::markDead()
 			LLFollowCamMgr::removeFollowCamParams(mID);
 		}
 
+		callListeners(LLViewerObjectListener::REM);
 		sNumZombieObjects++;
 	}
 }
@@ -3693,6 +3694,7 @@ void LLViewerObject::setTE(const U8 te, const LLTextureEntry &texture_entry)
 		const LLUUID& image_id = getTE(te)->getID();
 		mTEImages[te] = gImageList.getImage(image_id);
 //	}
+	callListeners(LLViewerObjectListener::TEX);
 }
 
 void LLViewerObject::setTEImage(const U8 te, LLViewerImage *imagep)
@@ -3706,6 +3708,7 @@ void LLViewerObject::setTEImage(const U8 te, LLViewerImage *imagep)
 		{
 			gPipeline.markTextured(mDrawable);
 		}
+		callListeners(LLViewerObjectListener::TEX);
 	}
 }
 
@@ -3723,6 +3726,7 @@ S32 LLViewerObject::setTETextureCore(const U8 te, const LLUUID& uuid, LLHost hos
 		{
 			gPipeline.markTextured(mDrawable);
 		}
+		callListeners(LLViewerObjectListener::TEX);
 	}
 	return retval;
 }
@@ -3777,6 +3781,7 @@ S32 LLViewerObject::setTEBumpmap(const U8 te, const U8 bump)
 			gPipeline.markTextured(mDrawable);
 			gPipeline.markRebuild(mDrawable, LLDrawable::REBUILD_GEOMETRY, TRUE);
 		}
+		callListeners(LLViewerObjectListener::BUMP);
 	}
 	return retval;
 }
@@ -3825,6 +3830,7 @@ S32 LLViewerObject::setTEShiny(const U8 te, const U8 shiny)
 	{
 		retval = LLPrimitive::setTEShiny(te, shiny);
 		setChanged(TEXTURE);
+		callListeners(LLViewerObjectListener::SHINE);
 	}
 	return retval;
 }
@@ -3890,6 +3896,7 @@ S32 LLViewerObject::setTEGlow(const U8 te, const F32 glow)
 		{
 			gPipeline.markTextured(mDrawable);
 		}
+		callListeners(LLViewerObjectListener::GLOW);
 	}
 	return retval;
 }

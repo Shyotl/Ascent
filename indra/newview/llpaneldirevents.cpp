@@ -137,7 +137,7 @@ void LLPanelDirEvents::setDay(S32 day)
 	// it's daylight savings time there.
 	internal_time = utc_to_pacific_time(utc_time, gPacificDaylightTime);
 	std::string date;
-	timeStructToFormattedString(internal_time, "%m-%d", date);
+	timeStructToFormattedString(internal_time, std::string("%m-%d"), date);
 	childSetValue("date_text", date);
 }
 
@@ -167,7 +167,7 @@ void LLPanelDirEvents::performQueryOrDelete(U32 event_id)
 	// it's daylight savings time there.
 	internal_time = utc_to_pacific_time(utc_time, gPacificDaylightTime);
 	std::string date;
-	timeStructToFormattedString(internal_time, "%m-%d", date);
+	timeStructToFormattedString(internal_time, std::string("%m-%d"), date);
 	childSetValue("date_text", date);
 
 	// Record the relative day so back and forward buttons

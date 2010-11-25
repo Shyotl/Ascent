@@ -26,7 +26,7 @@ private:
 class LLImageMetaDataReader
 {
 public:
-	static unsigned int ExtractEncodedComment(U8* data,int data_size, std::string& output);
+	static bool ExtractEncodedComment(U8* data,int data_size, std::map<std::string,std::pair<std::string,unsigned int> >& output);
 };
 #endif
 // </edit>

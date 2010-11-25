@@ -437,6 +437,7 @@ void handle_vfs_explorer(void*);
 void handle_sounds_explorer(void*);
 void handle_blacklist(void*);
 // </edit>
+void handle_texture_inspector(void *); //in shtextureinspector.h
 
 BOOL is_inventory_visible( void* user_data );
 void handle_reset_view();
@@ -779,8 +780,8 @@ void init_menus()
 											&handle_sounds_explorer, NULL));
 	menu->append(new LLMenuItemCallGL(	"Asset Blacklist",
 											&handle_blacklist, NULL));
-	
-	
+	menu->append(new LLMenuItemCallGL(	"Texture Inspector",
+											&handle_texture_inspector, NULL));
 	
 	// <dogmode>
 	// Add in the pose stand -------------------------------------------

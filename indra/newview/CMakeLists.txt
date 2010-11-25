@@ -492,6 +492,7 @@ set(viewer_SOURCE_FILES
 	scriptcounter.cpp
 	wlfPanel_AdvSettings.cpp
 	shcommandhandler.cpp
+	shtextureinspector.cpp
     )
 
 # This gets renamed in the packaging step

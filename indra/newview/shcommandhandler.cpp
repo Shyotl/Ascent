@@ -1,3 +1,39 @@
+/** 
+ * @file shcommandhandler.cpp
+ * @brief Chat/script command handler
+ * @Author Shyotl Kuhr
+ *
+ * $LicenseInfo:firstyear=2010&license=viewergpl$
+ * 
+ * Copyright (c) 2010, Shyotl Kuhr.
+ *  Custom implementation, mimics some commands present in Emerald
+ *
+ * ALL SOURCE CODE IS PROVIDED "AS IS." THE CREATOR MAKES NO
+ * WARRANTIES, EXPRESS, IMPLIED OR OTHERWISE, REGARDING ITS ACCURACY,
+ * COMPLETENESS OR PERFORMANCE.
+ */
+
+/* Commands can ONLY be issued by self, or owned objects.
+   Incomming llOwnerSay -> CMD_SCRIPT
+   Outgoing chat -> CMD_CHAT
+
+To add a script command with hardcoded name: 
+ CMD_SCRIPT(commandname) { code; }
+To add a chat command with hardcoded name:
+ CMD_CHAT(commandname) { code; }
+To add a script command with setting-defined name:
+ CMD_SCRIPT_SETTING(SettingGroup,settingname) { code; }
+Too add a chat command with setting-defined name:
+ CMD_CHAT_SETTING(SettingGroup,settingname) { code; }
+
+Passed arguments:
+ const SHCommandHandler *pCmd
+ const LLSD &args				args[0] = commandname, args[1] = first argument... etc
+ const std::string &full_str	Untokenized raw string, excluding arg[0]
+ const LLUUID &callerid			ID of object that issued command
+ LLViewerObject *pCaller		Object pointer of object that issued command, if available.
+*/
+
 #include "llviewerprecompiledheaders.h"
 
 #if SHY_MOD //Command handler
@@ -175,4 +211,27 @@ CMD_SCRIPT(gettext)
 	}
 }
 
+//Emerald-specific, adapted to ascent
+CMD_SCRIPT(emao)
+{
+	//args[1] = command
+	//args[2] = chan
+	LLCachedControl<bool> ao_enabled("AO.Enabled",false);
+	std::string cmd = args[1].asString();
+	if (cmd == "on")
+		ao_enabled = true;
+	else if (cmd == "off")
+		ao_enabled = false;
+	else if (cmd == "state")
+	{
+		S32 chan = atoi(args[2].asString().c_str());
+		SHCommandHandler::send_chat_to_object(ao_enabled ? "on" : "off",chan,LLUUID(NULL));
+	}
+}
+CMD_SCRIPT(emdd) //get draw distance setting
+{
+	//args[1] = chan
+	S32 chan = atoi(args[1].asString().c_str());
+	SHCommandHandler::send_chat_to_object(llformat("%f",gAgent.mDrawDistance),chan,LLUUID(NULL));
+}
 #endif //shy_mod

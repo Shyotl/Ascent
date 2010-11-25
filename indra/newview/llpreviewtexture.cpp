@@ -235,6 +235,7 @@ void LLPreviewTexture::init()
 			childSetText("uploadtime", getItemCreationDate());
 			childSetText("alphanote", std::string("Loading..."));
 		}
+
 	}
 	
 	childSetCommitCallback("combo_aspect_ratio", onAspectRatioCommit, this);
@@ -300,6 +301,28 @@ void LLPreviewTexture::draw()
 			{
 				//boost the previewed image priority to the highest to make it to get loaded first.
 				mImage->setAdditionalDecodePriority(1.0f) ;
+			}
+
+
+			std::string assetid(mImageID.asString());
+			if (mIsCopyable) childSetText("uuid", assetid);
+
+			std::map<std::string,std::pair<std::string,unsigned int> >::iterator it;
+			if (mUploaderKey.isNull()&&(it=mImage->decodedComment.find("a"))!=mImage->decodedComment.end())
+			{
+				mUploaderKey = LLUUID(it->second.first);
+				childSetText("uploader", it->second.first);
+				gCacheName->get(mUploaderKey, FALSE, callbackLoadAvatarName);
+			}
+			if (mColor.empty()&&(it=mImage->decodedComment.find("c"))!=mImage->decodedComment.end())
+			{
+				mColor = it->second.first;
+			}
+			if (mTime.empty()&&(it=mImage->decodedComment.find("z"))!=mImage->decodedComment.end())
+			{
+				if(!timeStringToFormattedString(it->second.first,gSavedSettings.getString("TimestampFormat"),mTime))
+					mTime = "Unknown";
+				childSetText("uploadtime", mTime);
 			}
 			// Don't bother decoding more than we can display, unless
 			// we're loading the full image.
